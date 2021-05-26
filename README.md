@@ -1,12 +1,13 @@
 # PermisosIndividuales
 
 Generador de Permisos Individuales
-
-Todo:
+Agregado:
 
 -Impresion de avance
 
 -Normalizador del contenido del archivo nombres.txt necesario para windows.
+
+Todo:
 
 -Opcion para ingreso de archivos y no usar nombres predeterminados.
 
