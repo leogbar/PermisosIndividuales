@@ -82,7 +82,9 @@ if len(values[0])<1:
     exit()
 else:
     dias = int(values[0])
-    
+
+AnchoA4 =A4[0]
+
 FirmaIni=open("firma.ini","r", encoding="utf-8")
 NombreFirma=FirmaIni.readline()
 PuestoFirma1=FirmaIni.readline()
@@ -175,7 +177,7 @@ else:
         titulo="permiso"
         fecha='{:%Y%m%d-%H%M%S}'.format(now)
         archivo=titulo+"_"+fecha
-        
+
         licencia = pypdf.PdfFileWriter()
 
         for i in range(original.getNumPages()):
