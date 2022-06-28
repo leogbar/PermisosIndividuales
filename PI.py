@@ -1,12 +1,12 @@
 #-------------------------------------------------------------------------------
-# Name:        PermisosIndividuales v8
+# Name:        PermisosIndividuales v9
 # Purpose: Emisión de PDF con permisos individuales en funcion de un PDF mayor
 # con ciertas caracteristicas, al cual, hay que borrarle y agregarle cosas en una
 # pagina y agregarle paginas modelo.
 #
 # Author:      Ing. Esp. Leonardo Barenghi
 #
-# Created:     14/09/2021
+# Created:     28/06/2022
 # Copyright:   (c) lbarenghi 2021 https://github.com/leogbar/PermisosIndividuales
 # Licence:     BSD 3
 #-------------------------------------------------------------------------------
@@ -44,17 +44,17 @@ def current_date_format(date):
 now = datetime.datetime.now()
 
 
-event, values = sg.Window('Generacion de Permisos Individuales v8', [[sg.Text('(c) Ing. Esp. Leonardo Barenghi - 2021 - Licencia bajo BSD 3')],[sg.Text(' ')],[sg.Text('Ingrese dias a partir de hoy:')],[sg.InputText()],
+event, values = sg.Window('Generacion de Permisos Individuales v9', 
+[[sg.Text('(c) Ing. Esp. Leonardo Barenghi - 2021 - Licencia bajo BSD 3')],[sg.Text(' ')],[sg.Text('Ingrese dias a partir de hoy:')],[sg.InputText()],
 [sg.Radio('Permiso Provisorio', "RADIO1", default=False, key="Permiso0")],
 [sg.Radio('Permiso Definitivo', "RADIO1", default=False, key="Permiso1")],
 [sg.Text(' ')],
 [sg.Radio('Una pagina por Permiso', "RADIO2", default=False, key="cantidad0")],
 [sg.Radio('Un permiso con multiples paginas', "RADIO2", default=False, key="cantidad1")],
- [sg.Text('Nombre de Archivo con los Permisos Individuales')], [sg.Input(), sg.FileBrowse()],
- [sg.Text('Cargue el Archivo que contiene los nombres de los permisos:')], [sg.Input(), sg.FileBrowse()],
+[sg.Text('Nombre de Archivo con los Permisos Individuales')], [sg.Input(), sg.FileBrowse()],
+[sg.Text('Cargue el Archivo que contiene los nombres de los permisos:')], [sg.Input(), sg.FileBrowse()],
 [sg.Text('Seleccione carpeta de salida:')],  [sg.Input(),sg.FolderBrowse()], [sg.OK(), sg.Cancel()]
-
- ]).read(close=True)
+]).read(close=True)
 
 encabezadof=""
 adjuntof=""
@@ -71,7 +71,6 @@ else:
     else:
         print("Operación invalida")
         exit()
-
 
 
 explorar =  values["Browse"]
@@ -125,16 +124,16 @@ adjunto=open(adjuntof, "rb")
 anexo=open("anexo.pdf", "rb")
 anexoBorrar=open("anexoBorrar.pdf", "rb")
 carpeta= values["Browse1"]
+
 if len(explorar)<1:
     print("No ingresó el archivo con los Permisos...")
     exit()
 else:
     recorrer=open(explorar, "rb")
 
-if len(nombres)<1:
-    nombres="permiso"
-else:
+if len(nombres)>0:
     nombres=open(nombres,"r", encoding="utf-8")
+
 if len(carpeta)<1:
     print("No ingresó el archivo con la carpeta de salida...")
     exit()
@@ -151,7 +150,13 @@ x=1
 
 if values["cantidad0"] == True:
     for i in range(original.getNumPages()):
-        archivo=nombres.readline()
+        if len(nombres)<1:
+            archivo="permiso"
+        else:
+            archivo=nombres.readline()
+            archivo = unidecode(archivo)
+            archivo=archivo[:-1]
+        
         licencia1 = pypdf.PdfFileWriter()
         licencia1=original.getPage(i)
 
@@ -164,8 +169,7 @@ if values["cantidad0"] == True:
         licencia.addPage(licencia1)
         licencia.addPage(adjuntoPdf)
 
-        archivo = unidecode(archivo)
-        archivo=archivo[:-1]
+
         salida=carpeta+separador+str(x)+"_"+archivo+".pdf"
         x=x+1
         print("Generando "+salida+ "..."+"\n")
@@ -189,7 +193,6 @@ else:
                 licencia1.mergePage(lineaPdf)
                 licencia1.mergePage(firmaPdf)
                 licencia.addPage(licencia1)
-                licencia.addPage(adjuntoPdf)
                 x=x+1
             else:
                 licencia1 = pypdf.PdfFileWriter()
@@ -198,7 +201,7 @@ else:
                 licencia1.mergePage(anexoPdf)
                 licencia.addPage(licencia1)
                 x=x+1
-
+        licencia.addPage(adjuntoPdf)        
         salida=carpeta+separador+archivo+".pdf"
         print("Generando "+salida+ "..."+"\n")
 
